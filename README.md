@@ -36,7 +36,7 @@ public DeferredResult<ResponseEntity<String>> asyncGetState() {
 
 No parameters are required to call above sample endpoint.
 
- * The controller must have been initialized with a [```BroadcastContentManager<C extends BroadcastContent> (BCM)```](docs/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) on server side.
+ * The controller must have been initialized with a [```BroadcastContentManager<C extends BroadcastContent> (BCM)```](https://kartoffelquadrat.github.io/AsyncRestLib/docs/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) on server side.
  * The BCM wraps an observed state and ensures unblocks all suspended replies on state changes.
 
 
@@ -85,11 +85,11 @@ When provided with a client-state hash, the ARL omits redundant updates. Hash-mi
 *Hashed update requests also ensure nothing is missed in the rare case of state changes between poll iterations.*
 
  * ```ResponseGenerator.getTransformedUpdate(longPollTimeout, broadcastContentManager, hash, transf, tag)```  
-Allows custom [server-side transformations](docs/eu/kartoffelquadrat/asyncrestlib/Transformer.html) of state-changes, prior to propagation. Replies are withheld until a transformed update differs in hash and is non-empty.
+Allows custom [server-side transformations](https://kartoffelquadrat.github.io/AsyncRestLib/docs/eu/kartoffelquadrat/asyncrestlib/Transformer.html) of state-changes, prior to propagation. Replies are withheld until a transformed update differs in hash and is non-empty.
 
 ### Hashing
 
-Hash-based updates operate on a [MD5-sum of the JSON-string serialization](docs/eu/kartoffelquadrat/asyncrestlib/BroadcastContentHasher.html).  
+Hash-based updates operate on a [MD5-sum of the JSON-string serialization](https://kartoffelquadrat.github.io/AsyncRestLib/docs/eu/kartoffelquadrat/asyncrestlib/BroadcastContentHasher.html).  
 ARL-internal hashing:  
 ```DigestUtils.md5Hex(new Gson().toJson(broadcastContent))```:
 
@@ -125,7 +125,7 @@ Then add the following dependency block:
 
 Add the following repository to your ```build.gradle```:
 
-```json
+```
 allprojects {
 	repositories {
 		...
@@ -136,7 +136,7 @@ allprojects {
 
 Then add the following dependency:
 
-```json
+```
 dependencies {
 	implementation 'com.github.kartoffelquadrat:AsyncRestLib:v1.2'
 }
@@ -146,7 +146,7 @@ dependencies {
 
  1. Prepare a vanilla Spring-REST controller enpoint.
  2. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
- 3. Define your own extension to the ASR-provided [BroadcastContent](docs/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
+ 3. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/docs/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
  4. Initialize your Spring REST controller with a BroadcastContentManager, typed on your custom BroadcastContent implementation:  
 ```private BroadcastContentManager<YourBroadCastContentImplementation> broadcastContentManager;```
  5. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
