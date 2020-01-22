@@ -98,16 +98,48 @@ ARL-internal hashing:
 
 ## Quickstart
 
-### Project Integration
+### Project Integration (Maven)
 
-Add the following dependedcy block to your ```pom.xml```.
+Add the following repository block to your ```pom.xml```:
+
+```xml
+<repositories>
+	<repository>
+	    <id>jitpack.io</id>
+	    <url>https://jitpack.io</url>
+	</repository>
+</repositories>
+```
+
+Then add the following dependency block:
 
 ```xml
 <dependency>
-    <groupId>eu.kartoffelquadrat</groupId>
-    <artifactId>asyncrestlib</artifactId>
-    <version>1.1</version>
+    <groupId>com.github.kartoffelquadrat</groupId>
+    <artifactId>AsyncRestLib</artifactId>
+    <version>v1.2</version>
 </dependency>
+```
+
+### Project Integration (Gradle)
+
+Add the following repository to your ```build.gradle```:
+
+```json
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+```
+
+Then add the following dependency:
+
+```json
+dependencies {
+	implementation 'com.github.kartoffelquadrat:AsyncRestLib:v1.2'
+}
 ```
 
 ### Usage
