@@ -146,21 +146,18 @@ dependencies {
 }
 ```
 
-### Usage
+### Code
 
  1. Prepare a vanilla Spring-REST controller enpoint.
  2. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
  3. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
- 4. Initialize your Spring REST controller with a BroadcastContentManager, typed on your custom BroadcastContent implementation:  
-```private BroadcastContentManager<YourBroadCastContentImplementation> broadcastContentManager;```
+ 4. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/    BroadcastContentManager.html), typed on your custom [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
  5. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
 ```private Transformer<ChatMessage> transformer = new IdentityTransformer<>();```
- 6. Call one of three ASR methods from within the controller and return the result value. Either of:
+ 6. From within your controller, call one of three ASR methods:
    * ```return ResponseGenerator.getAsyncUpdate(longPollTimeout, broadcastContentManager);```
    * ```return ResponseGenerator.getHashBasedUpdate(longPollTimeout, broadcastContentManager, hash);```
    * ```return ResponseGenerator.getTransformedUpdate(longPollTimeout, broadcastContentManager, hash, transformer,tag);```
- 7. Add the controll long-poll controll loop counterpart and call your modified endpoint.
-
 
 ## Contact / Pull Requests
 
