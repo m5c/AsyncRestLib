@@ -105,9 +105,9 @@ ARL-internal hashing:
  * Google [Gson](https://mvnrepository.com/artifact/com.google.code.gson/gson/2.8.6): JSON-string serialization of Java beans.
  * Apache Commons [DigestUtils](https://mvnrepository.com/artifact/commons-codec/commons-codec/1.4): MD5 hasher library for Strings
 
-## Quickstart
+## Project Integration
 
-### Project Integration (Maven)
+### Maven
 
 Add the following repository block to your ```pom.xml```:
 
@@ -130,7 +130,7 @@ Then add the following dependency block:
 </dependency>
 ```
 
-### Project Integration (Gradle)
+### Gradle
 
 Add the following repository to your ```build.gradle```:
 
@@ -151,16 +151,17 @@ dependencies {
 }
 ```
 
-### Code
+## Quickstart
 
- 1. Prepare a vanilla Spring-REST controller enpoint.
- 2. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
- 3. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
+ 1. Add the ARL as a project dependency to your Spring Boot project.
+ 2. Prepare a vanilla Spring-REST controller enpoint.
+ 3. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
+ 4. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
 -> Implement the ```isEmpty()``` method and **add a default constructor**.
- 4. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>```.
- 5. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
+ 5. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>```.
+ 6. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
 ```private Transformer<ChatMessage> transformer = new IdentityTransformer<>();```
- 6. From within your controller, call one of three ASR methods:
+ 7. From within your controller, call one of three ASR methods:
    * ```return ResponseGenerator.getAsyncUpdate(longPollTimeout, broadcastContentManager);```
    * ```return ResponseGenerator.getHashBasedUpdate(longPollTimeout, broadcastContentManager, hash);```
    * ```return ResponseGenerator.getTransformedUpdate(longPollTimeout, broadcastContentManager, hash, transformer,tag);```
