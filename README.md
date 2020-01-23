@@ -85,11 +85,16 @@ if (returnCode == 200)
 The ARL provides two more sophisticated methods to prevent redundant updates. They replace the ```getAsyncUpdate(...)``` method.
 
  * ```ResponseGenerator.getHashBasedUpdate(longPollTimeout, broadcastContentManager, hash)```  
-When provided with a client-state hash, the ARL omits redundant updates. Hash-mismatches are handled instantly, this means with this method clients can retrieve the initial state synchronously.  
-*Hashed update requests also ensure nothing is missed in the rare case of state changes between poll iterations.*
+Update requests contain a hash of the current client state. Requests with a non-matching hash are answered instantly.  
+*If in doubt, call this method, rather than ```getAsyncUpdate(...)```.*
+
+   * More reliable than ```getAsyncUpdate()```. The hash verification ensures that state changes arising during long-poll connection establishment are detected.
+   * Can be used to retrieve an initial client state synchronously, instead of having to wait for the first update.
 
  * ```ResponseGenerator.getTransformedUpdate(longPollTimeout, broadcastContentManager, hash, transf, tag)```  
-Allows custom [server-side transformations](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/Transformer.html) of state-changes, prior to propagation. Replies are withheld until a transformed update differs in hash and is non-empty.
+Allows custom [server-side transformations](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/Transformer.html) of state-changes, prior to propagation. 
+   * Replies are withheld until a transformed update differs in hash and is non-empty.
+   * Allows the injection of custom pub/sub filters on server side and reduce traffic.
 
 ### Hashing
 
@@ -150,8 +155,9 @@ dependencies {
 
  1. Prepare a vanilla Spring-REST controller enpoint.
  2. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
- 3. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
- 4. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), typed on your custom [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
+ 3. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
+-> Implement the ```isEmpty()``` method and **add a default constructor**.
+ 4. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>```.
  5. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
 ```private Transformer<ChatMessage> transformer = new IdentityTransformer<>();```
  6. From within your controller, call one of three ASR methods:
