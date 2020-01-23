@@ -39,9 +39,9 @@ The ASR uses the generic [```BroadcastContentManager```](https://kartoffelquadra
 
  * Make your state class (the object your clients requested) implement the ASR's [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
  * The [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) (bcm) always holds exactly one instance of your custom [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
- * To modify the server maintained state, provide a new [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) instance to your BCM, with:  
+ * To modify the server maintained state, provide a new [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) instance to your bcm, with:  
 ```bcm.updateBroadcastContent(theNewState)```
- * The BCM then automatically unblocks all affected withheld update requests.
+ * The bcm then automatically unblocks all affected withheld update requests.
  * To close you endpoint (e.g. server-shutdown), call ```bcm.terminate()```. This advises clients to stop polling.
 
 ### Return Codes
