@@ -20,22 +20,6 @@ public class StringBroadcastContent implements BroadcastContent {
         return content.isEmpty();
     }
 
-    @Override
-    public String serialize() {
-        return content;
-    }
-
-    @Override
-    public boolean equalsByMD5(BroadcastContent other) {
-
-        // reject null references
-        if (other == null)
-            return false;
-
-        // compare by md5 hash, with lib-provided hash tool.
-        return BroadcastContentHasher.hash(this).equals(BroadcastContentHasher.hash(other));
-    }
-
     public boolean contains(String other)
     {
         return(content.contains(other));

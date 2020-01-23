@@ -3,9 +3,9 @@ package eu.kartoffelquadrat.asyncrestlib;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * The Broadcast Content Manager (BCM) maintains a reference to the current ontent state (Broadcast Content). The entity
- * behind the reference should not ne internally modified. If changes appear the entire reference should eb updated, via
- * the updateBroadCastContent method.
+ * The Broadcast Content Manager (BCM) maintains a reference to the current content state (Broadcast Content). The
+ * entity behind the reference should not be internally modified, but replaced as a whole. If changes appear the entire
+ * reference should eb updated, via the updateBroadCastContent method.
  *
  * @author Maximilian Schiedermeier
  */
@@ -27,7 +27,7 @@ public class BroadcastContentManager<C extends BroadcastContent> {
      *
      * @return a flag that indicates whether there are further updates to expect after this one.
      */
-    public boolean awaitUpdate() {
+    protected boolean awaitUpdate() {
         try {
             stateUpdateLatch.await();
             return isTerminated();
@@ -50,7 +50,7 @@ public class BroadcastContentManager<C extends BroadcastContent> {
             throw new RuntimeException("Content can not be updated any more. The broadcast manager is already " +
                     "terminated.");
         }
-        if (!contentUpdate.isEmpty() && !customBroadcastContent.equalsByMD5(contentUpdate)) {
+        if (!contentUpdate.isEmpty() && !getContentHash().equals(BroadcastContentHasher.hash(contentUpdate))) {
             this.customBroadcastContent = contentUpdate;
 
             // unblock all threads blocked by current latch

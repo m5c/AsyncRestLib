@@ -151,7 +151,7 @@ dependencies {
  1. Prepare a vanilla Spring-REST controller enpoint.
  2. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
  3. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
- 4. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/    BroadcastContentManager.html), typed on your custom [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
+ 4. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), typed on your custom [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
  5. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
 ```private Transformer<ChatMessage> transformer = new IdentityTransformer<>();```
  6. From within your controller, call one of three ASR methods:

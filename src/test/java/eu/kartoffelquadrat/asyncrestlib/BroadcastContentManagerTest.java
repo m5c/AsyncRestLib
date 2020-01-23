@@ -48,7 +48,7 @@ public class BroadcastContentManagerTest {
 
         // block until update, then check content and termination flag
         assertFalse(manager.awaitUpdate());
-        assertTrue(manager.getCurrentBroadcastContent().serialize().equals(updateContentString));
+        assertTrue(BroadcastContentHasher.hash(manager.getCurrentBroadcastContent()).equals(BroadcastContentHasher.hash(new StringBroadcastContent(updateContentString))));
     }
 
 
@@ -69,7 +69,7 @@ public class BroadcastContentManagerTest {
 
         // block until update, then check content and termination flag
         assertTrue(manager.awaitUpdate());
-        assertTrue(manager.getCurrentBroadcastContent().serialize().equals(defaultContentString));
+        assertTrue(BroadcastContentHasher.hash(manager.getCurrentBroadcastContent()).equals(BroadcastContentHasher.hash(new StringBroadcastContent(defaultContentString))));
     }
 
     /**
@@ -83,9 +83,9 @@ public class BroadcastContentManagerTest {
 
     @Test
     public void contentRetrieval() {
-        assertTrue(manager.getCurrentBroadcastContent().serialize().equals(defaultContentString));
+        assertTrue(BroadcastContentHasher.hash(manager.getCurrentBroadcastContent()).equals(BroadcastContentHasher.hash(new StringBroadcastContent(defaultContentString))));
         manager.updateBroadcastContent(new StringBroadcastContent(updateContentString));
-        assertTrue(manager.getCurrentBroadcastContent().serialize().equals(updateContentString));
+        assertTrue(BroadcastContentHasher.hash(manager.getCurrentBroadcastContent()).equals(BroadcastContentHasher.hash(new StringBroadcastContent(updateContentString))));
     }
 
     /**
@@ -94,7 +94,7 @@ public class BroadcastContentManagerTest {
     @Test
     public void verifyHash() {
         // The MD5 of the default string abc123 is e99a18c428cb38d5f260853678922e03
-        String expectedHash = DigestUtils.md5Hex(new Gson().toJson(new StringBroadcastContent("abc123")));
+        String expectedHash = BroadcastContentHasher.hash(new StringBroadcastContent("abc123"));
         assertTrue(manager.getContentHash().equals(expectedHash));
     }
 }

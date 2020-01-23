@@ -22,8 +22,8 @@ public class IdentityTransformerTest {
 
     @Test
     public void testIdentityTransformerOutput() {
-        assert identityTransformer.transform(content, null).serialize().equals(contentPayload);
-        assert identityTransformer.transform(content, contentPayload).serialize().equals(contentPayload);
+        assert BroadcastContentHasher.hash(identityTransformer.transform(content, null)).equals(BroadcastContentHasher.hash(new StringBroadcastContent(contentPayload)));
+        assert BroadcastContentHasher.hash(identityTransformer.transform(content, contentPayload)).equals(BroadcastContentHasher.hash(new StringBroadcastContent(contentPayload)));
 
     }
 }

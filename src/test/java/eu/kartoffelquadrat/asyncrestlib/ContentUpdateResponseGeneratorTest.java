@@ -119,8 +119,4 @@ public class ContentUpdateResponseGeneratorTest {
                 new StringResponseCollectingClient(timeout, bcm, "");
         assertTrue(stringResponseCollectingClientClient.getBufferedJsonStringResponseEntities().size() == 1);
     }
-
-    private static String hashString(String input) {
-        return DigestUtils.md5Hex(input);
-    }
 }
