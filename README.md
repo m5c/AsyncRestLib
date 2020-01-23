@@ -156,12 +156,12 @@ dependencies {
  1. Add the ARL as a project dependency to your Spring Boot project.
  2. Prepare a vanilla Spring-REST controller enpoint.
  3. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
- 4. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
+ 4. Make the your state-object implement the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
 -> Implement the ```isEmpty()``` method and **add a default constructor**.
- 5. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>```.
+ 5. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>``` payload.
  6. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
-```private Transformer<ChatMessage> transformer = new IdentityTransformer<>();```
- 7. From within your controller, call one of three ASR methods:
+```private Transformer<ChatMessage> transformer = new YourCustomTransformer<>();```
+ 7. From within your controller, call an ASR method and return the result:
    * ```return ResponseGenerator.getAsyncUpdate(longPollTimeout, broadcastContentManager);```
    * ```return ResponseGenerator.getHashBasedUpdate(longPollTimeout, broadcastContentManager, hash);```
    * ```return ResponseGenerator.getTransformedUpdate(longPollTimeout, broadcastContentManager, hash, transformer,tag);```
