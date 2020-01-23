@@ -121,7 +121,7 @@ Then add the following dependency block:
 <dependency>
     <groupId>com.github.kartoffelquadrat</groupId>
     <artifactId>AsyncRestLib</artifactId>
-    <version>v1.2</version>
+    <version>v1.3</version>
 </dependency>
 ```
 
@@ -142,7 +142,7 @@ Then add the following dependency:
 
 ```
 dependencies {
-	implementation 'com.github.kartoffelquadrat:AsyncRestLib:v1.2'
+	implementation 'com.github.kartoffelquadrat:AsyncRestLib:v1.3'
 }
 ```
 
