@@ -6,7 +6,7 @@ package eu.kartoffelquadrat.asyncrestlib;
  *
  * @author Maximilian Schiedermeier
  */
-public class IdentityTransformer<T extends BroadcastContent> implements Transformer<T> {
+class IdentityTransformer<T extends BroadcastContent> implements Transformer<T> {
 
     @Override
     public T transform(T inputBroadcastContent, String transformerTag) {

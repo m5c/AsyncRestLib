@@ -14,8 +14,6 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-    <!--No need to include these dependencies in the artifact build (JAR), because the library user implicitly has
-    spring boot in his project.-->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

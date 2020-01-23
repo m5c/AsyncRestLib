@@ -12,7 +12,7 @@ import org.springframework.web.context.request.async.DeferredResult;
  * @author Maximilian Schiedermeier
  * @param <C> as the user provided BroadcastContent extension to this library.
  */
-public class AsyncNotifyThread<C extends BroadcastContent> implements Runnable {
+class AsyncNotifyThread<C extends BroadcastContent> implements Runnable {
 
 
     private BroadcastContentManager<C> broadcastContentManager;

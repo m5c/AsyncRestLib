@@ -1,7 +1,7 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
 /**
- * Classes implementing this interface can be used to transform internal server state changed, based on connection
+ * Classes implementing this interface can be used to transform internal server state changes, based on connection
  * specific tags. (The tag is provided by the spring rest controller, based on the connection parameters, e.g. clientid)
  * However the tag does no necessarily have to be connection specific. A client could for instance provide a tag
  * "allcaps" (to a corresponding char-manipulating transformer). If such tag is recognized by the transformer, the

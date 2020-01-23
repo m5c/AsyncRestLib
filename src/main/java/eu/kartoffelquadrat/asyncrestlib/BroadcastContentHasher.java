@@ -9,7 +9,7 @@ import org.apache.commons.codec.digest.DigestUtils;
  *
  * @author Maximilian Schiedermeier
  */
-public class BroadcastContentHasher {
+class BroadcastContentHasher {
 
     public static String hash(BroadcastContent content) {
         return DigestUtils.md5Hex(new Gson().toJson(content));
