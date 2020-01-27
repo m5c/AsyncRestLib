@@ -53,15 +53,31 @@ public class BroadcastContentManager<C extends BroadcastContent> {
         if (!contentUpdate.isEmpty() && !getContentHash().equals(BroadcastContentHasher.hash(contentUpdate))) {
             this.customBroadcastContent = contentUpdate;
 
-            // unblock all threads blocked by current latch
-            stateUpdateLatch.countDown();
-
-            // create a new latch for future threads
-            stateUpdateLatch = new CountDownLatch(1);
+            touch();
         }
     }
 
-    // Ignore the "never used" warning, this method is called by the library-user.
+    /**
+     * Manually advises to BroadcastContentManager that the content hash changed. The BroadcastContentManager then
+     * unblocks all subscribers, waiting for an update. Usually calling this method is not required, for
+     * BroadcastContents are supposed to be implemented as immutables. The default way to notify the
+     * BroadcastContentManager about an update is therefore the "updateBroadcastContent" method. Use this one only if
+     * your BroadcastContent is not immutable and you modified the internals of the instance maintained by the
+     * BroadcastContentManager.
+     */
+    public void touch() {
+        // unblock all threads blocked by current latch
+        stateUpdateLatch.countDown();
+
+        // create a new latch for future threads
+        stateUpdateLatch = new CountDownLatch(1);
+    }
+
+    /**
+     * Call this method to prevent further updates. Calling this method unblocks subscribers to updates. The ARL
+     * furthermore sets the HTTP return code to 500, to indicate that no further updates will be provided for this
+     * resource.
+     */
     public void terminate() {
         this.terminated = true;
 
