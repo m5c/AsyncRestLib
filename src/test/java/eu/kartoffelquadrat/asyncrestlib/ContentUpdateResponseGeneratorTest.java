@@ -1,13 +1,10 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -106,7 +103,7 @@ public class ContentUpdateResponseGeneratorTest {
     }
 
     /**
-     * A client who does not provide a hash mast be notified about all status updates
+     * A client who does not provide a hash mast be notified about all status updates.
      */
     @Test
     public void testHashlessTransformerlessUpdates() {
@@ -118,5 +115,22 @@ public class ContentUpdateResponseGeneratorTest {
         StringResponseCollectingClient stringResponseCollectingClientClient =
                 new StringResponseCollectingClient(timeout, bcm, "");
         assertTrue(stringResponseCollectingClientClient.getBufferedJsonStringResponseEntities().size() == 1);
+    }
+
+
+    /**
+     * Verify that a terminated BCM always leads to a 204 HTTP Code.
+     */
+    @Test
+    public void verifyTerminated() {
+
+        // Create some state that will be observed by the content and immediately temrinate the bcm
+        BroadcastContentManager<StringBroadcastContent> bcm = new BroadcastContentManager(new StringBroadcastContent("A"));
+        bcm.terminate();
+
+        // now register a client to the responseGenerator and make sure all fired updates (including the initial
+        // state "A" are registered) -> we provide an empty string as hash to get the initial state (synchronized).
+        DeferredResult<ResponseEntity<String>> deferredResult = ResponseGenerator.getAsyncUpdate(timeout, bcm);
+        assertTrue(((ResponseEntity<String>) deferredResult.getResult()).getStatusCode().value() == 410);
     }
 }

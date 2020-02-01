@@ -85,6 +85,11 @@ public class BroadcastContentManager<C extends BroadcastContent> {
         stateUpdateLatch.countDown();
     }
 
+
+    /**
+     * Getter to tell whether this BroadcastContentManager declines further updates.
+     * @return a flag to indicate if this manager is already terminated.
+     */
     public boolean isTerminated() {
         return terminated;
     }
@@ -93,7 +98,7 @@ public class BroadcastContentManager<C extends BroadcastContent> {
      * returns the md5-sum of the serialized version of the currently stored content. This can be used to avoid status
      * updates when the managed content hs not actually changed.
      *
-     * @return the hash of the content
+     * @return the hash of the content.
      */
     public String getContentHash() {
         return BroadcastContentHasher.hash(customBroadcastContent);
