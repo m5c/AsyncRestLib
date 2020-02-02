@@ -39,9 +39,9 @@ The ASR uses the generic [```BroadcastContentManager```](https://kartoffelquadra
 
  * Make your state class (the object your clients requested) implement the ASR's [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
  * The [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) (bcm) always holds exactly one instance of your custom [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
- * To modify the server maintained state, provide a new [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) instance to your BCM, with:  
+ * To modify the server maintained state, provide a new [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) instance to your bcm, with:  
 ```bcm.updateBroadcastContent(theNewState)```
- * The BCM then automatically unblocks all affected withheld update requests.
+ * The bcm then automatically unblocks all affected withheld update requests.
  * To close you endpoint (e.g. server-shutdown), call ```bcm.terminate()```. This advises clients to stop polling.
 
 ### Return Codes
@@ -85,11 +85,16 @@ if (returnCode == 200)
 The ARL provides two more sophisticated methods to prevent redundant updates. They replace the ```getAsyncUpdate(...)``` method.
 
  * ```ResponseGenerator.getHashBasedUpdate(longPollTimeout, broadcastContentManager, hash)```  
-When provided with a client-state hash, the ARL omits redundant updates. Hash-mismatches are handled instantly, this means with this method clients can retrieve the initial state synchronously.  
-*Hashed update requests also ensure nothing is missed in the rare case of state changes between poll iterations.*
+Update requests contain a hash of the current client state. Requests with a non-matching hash are answered instantly.  
+*If in doubt, call this method, rather than ```getAsyncUpdate(...)```.*
+
+   * More reliable than ```getAsyncUpdate()```. The hash verification ensures that state changes arising during long-poll connection establishment are detected.
+   * Can be used to retrieve an initial client state synchronously, instead of having to wait for the first update.
 
  * ```ResponseGenerator.getTransformedUpdate(longPollTimeout, broadcastContentManager, hash, transf, tag)```  
-Allows custom [server-side transformations](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/Transformer.html) of state-changes, prior to propagation. Replies are withheld until a transformed update differs in hash and is non-empty.
+Allows custom [server-side transformations](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/Transformer.html) of state-changes, prior to propagation. 
+   * Replies are withheld until a transformed update differs in hash and is non-empty.
+   * Allows the injection of custom pub/sub filters on server side and reduce traffic.
 
 ### Hashing
 
@@ -100,9 +105,9 @@ ARL-internal hashing:
  * Google [Gson](https://mvnrepository.com/artifact/com.google.code.gson/gson/2.8.6): JSON-string serialization of Java beans.
  * Apache Commons [DigestUtils](https://mvnrepository.com/artifact/commons-codec/commons-codec/1.4): MD5 hasher library for Strings
 
-## Quickstart
+## Project Integration
 
-### Project Integration (Maven)
+### Maven
 
 Add the following repository block to your ```pom.xml```:
 
@@ -125,7 +130,7 @@ Then add the following dependency block:
 </dependency>
 ```
 
-### Project Integration (Gradle)
+### Gradle
 
 Add the following repository to your ```build.gradle```:
 
@@ -146,15 +151,17 @@ dependencies {
 }
 ```
 
-### Code
+## Quickstart
 
- 1. Prepare a vanilla Spring-REST controller enpoint.
- 2. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
- 3. Define your own extension to the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
- 4. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), typed on your custom [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
- 5. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
-```private Transformer<ChatMessage> transformer = new IdentityTransformer<>();```
- 6. From within your controller, call one of three ASR methods:
+ 1. Add the ARL as a project dependency to your Spring Boot project.
+ 2. Prepare a vanilla Spring-REST controller enpoint.
+ 3. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
+ 4. Make the your state-object implement the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
+-> Implement the ```isEmpty()``` method and **add a default constructor**.
+ 5. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>``` payload.
+ 6. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
+```private Transformer<ChatMessage> transformer = new YourCustomTransformer<>();```
+ 7. From within your controller, call an ASR method and return the result:
    * ```return ResponseGenerator.getAsyncUpdate(longPollTimeout, broadcastContentManager);```
    * ```return ResponseGenerator.getHashBasedUpdate(longPollTimeout, broadcastContentManager, hash);```
    * ```return ResponseGenerator.getTransformedUpdate(longPollTimeout, broadcastContentManager, hash, transformer,tag);```
