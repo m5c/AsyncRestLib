@@ -49,8 +49,8 @@ The ASR uses the generic [```BroadcastContentManager```](https://kartoffelquadra
 The ARL replies with one of the following three return codes. 
 
  * ```200 [OK]```: Update notification. **The HTTP body contains a JSON-string serialization of the update object**.
+ * ```204 [Gone]```: The request could not be answered, because the server does not offer asynchronous updates on this endpoint any longer.
  * ```408 [Request Timeout]```: The HTTP request reached a timeout, without any state change on server side since.
- * ```500 [Internal server error]```: The request could not be answered, because the server does not offer asynchronous updates on this endpoint any longer.
 
 ### Client Long-Poll Counterpart
 
