@@ -167,10 +167,10 @@ public class ResponseGenerator {
         // worker thread who handles this call-stack is not blocked.
         // The new thread can be interrupted by the already running DeferredResult's timeout handler.
         // This is a blocking thread, so we use the ForkJoinPoll, to avoid waisting ordinary worker threads.
-        Runnable awaitInternalStateChangeAndUpdateDeferredResultIfNeededThread =
+        Thread awaitInternalStateChangeAndUpdateDeferredResultIfNeededThread =
                 new Thread(new AsyncNotifyThread<>(broadcastContentManager,
                         clientContentHashString, transformer, transformTag, deferredResult));
-        ForkJoinPool.commonPool().submit(awaitInternalStateChangeAndUpdateDeferredResultIfNeededThread);
+        awaitInternalStateChangeAndUpdateDeferredResultIfNeededThread.start();
 
         return deferredResult;
     }
