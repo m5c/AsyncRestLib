@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.lang.reflect.Field;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -39,43 +41,6 @@ public class ContentUpdateResponseGeneratorTest {
         assertFalse(deferredResult.hasResult());
         assertFalse(deferredResult.isSetOrExpired());
     }
-
-    /**
-     * DEACTIVATED - Very unreliable to test due to required timers.
-     * If a custom transformer is provided that turns the init message into a zero length string or only whitespace
-     * string, no update must be emitted. Expected result is therefore a timeout and NOT an empty string.
-     */
-//    @Test
-//    public void testNoMessageForInitMessageOnTransformationToEmptyString() {
-//
-//        AtomicBoolean threadwasactive = new AtomicBoolean(false);
-//
-//        // we simulate an internal server status change that occurs before timeout
-//        new Thread(() -> {
-//            try {
-//                Thread.sleep(30);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException("Thread sleep failed");
-//            }
-//            threadwasactive.set(true);
-//
-//            // we update by something containing an x
-//            bcm.updateBroadcastContent(new StringBroadcastContent("xyz"));
-//        }).start();
-//
-//
-//        // we expect that the init message is NOT returned, but that the update of above thread is returned (contains an "x")
-//        // this means that the next line blocks until above thread updated the content.
-//        assertFalse(threadwasactive.get());
-//        DeferredResult<ResponseEntity<String>> deferredResult = ResponseGenerator.getTransformedUpdate(timeout, bcm, "someDummyHash", new EraserTransformer(), "x");
-//        assertTrue(threadwasactive.get());
-//
-//        // We expect that there is a result set and that it contains the string "xyz"
-//        assertTrue(deferredResult.hasResult());
-//        assertTrue(deferredResult.isSetOrExpired());
-//        assertTrue(((ResponseEntity<String>) deferredResult.getResult()).getStatusCode().value() == 200);
-//        assertTrue((((ResponseEntity<String>) deferredResult.getResult()).getBody().contains("xyz")));
-//    }
 
     /**
      * Create a new ResponseGenerator with 50ms timeout, trigger timeout and check the return code in the HTTP header is
@@ -119,18 +84,26 @@ public class ContentUpdateResponseGeneratorTest {
 
 
     /**
-     * Verify that a terminated BCM always leads to a 204 HTTP Code.
+     * Verify that a terminated BCM always leads to a 410 (gone) HTTP Code.
      */
     @Test
-    public void verifyTerminated() {
+    public void verifyTerminated() throws NoSuchFieldException, IllegalAccessException {
 
-        // Create some state that will be observed by the content and immediately temrinate the bcm
+        // Create some state that will be observed by the content and immediately terminate the bcm
         BroadcastContentManager<StringBroadcastContent> bcm = new BroadcastContentManager(new StringBroadcastContent("A"));
         bcm.terminate();
 
         // now register a client to the responseGenerator and make sure all fired updates (including the initial
         // state "A" are registered) -> we provide an empty string as hash to get the initial state (synchronized).
         DeferredResult<ResponseEntity<String>> deferredResult = ResponseGenerator.getAsyncUpdate(timeout, bcm);
-        assertTrue(((ResponseEntity<String>) deferredResult.getResult()).getStatusCode().value() == 410);
+
+        // At this point we can not simply extract and cast the response as-is. Unfortunately spring does not allow the
+        // cast of responseEntities, if the result code represents an error. (defaultbuilder exception)
+        // Therefore we need extract the status code using reflection.
+        Object responseEntity = deferredResult.getResult();
+        Field statusCodeField = responseEntity.getClass().getDeclaredField("statusCode");
+        statusCodeField.setAccessible(true);
+        HttpStatus httpStatus = (HttpStatus) statusCodeField.get(responseEntity);
+        assertTrue(httpStatus.value() == 410);
     }
 }
