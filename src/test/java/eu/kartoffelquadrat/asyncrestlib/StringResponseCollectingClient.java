@@ -29,6 +29,20 @@ public class StringResponseCollectingClient {
                 , bcm, initialHash).getResult()).getBody());
     }
 
+    /**
+     * Overloaded constructor that also accepts a transformer.
+     */
+    public StringResponseCollectingClient(long timeout, BroadcastContentManager bcm, String initialHash, Transformer transformer, String tag)
+    {
+        bufferedJsonStringResponseEntities = new LinkedList();
+
+        // subscribe to hashed, transformed updates
+        String update = ((ResponseEntity<String>) ResponseGenerator.getTransformedUpdate(timeout
+                , bcm, initialHash, transformer, tag).getResult()).getBody();
+
+        bufferedJsonStringResponseEntities.add(update);
+    }
+
     public List<String> getBufferedJsonStringResponseEntities() {
         return Collections.unmodifiableList(bufferedJsonStringResponseEntities);
     }

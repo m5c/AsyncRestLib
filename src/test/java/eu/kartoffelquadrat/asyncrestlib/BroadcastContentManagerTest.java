@@ -48,6 +48,7 @@ public class BroadcastContentManagerTest {
 
         // block until update, then check content and termination flag
         assertFalse(manager.awaitUpdate());
+        assertFalse(manager.isTerminated());
         assertTrue(BroadcastContentHasher.hash(manager.getCurrentBroadcastContent()).equals(BroadcastContentHasher.hash(new StringBroadcastContent(updateContentString))));
     }
 

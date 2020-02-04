@@ -206,5 +206,4 @@ public class ResponseGenerator {
         return !callerBroadcastContentHash.equals(BroadcastContentHasher.hash(transformedBroadcastContent));
     }
 
-
 }

@@ -71,7 +71,7 @@ public class ContentUpdateResponseGeneratorTest {
      * A client who does not provide a hash mast be notified about all status updates.
      */
     @Test
-    public void testHashlessTransformerlessUpdates() {
+    public void testHashedTransformerlessUpdates() {
         // Create some state that will be observed by the remote client
         BroadcastContentManager bcm = new BroadcastContentManager(new StringBroadcastContent("A"));
 
@@ -82,6 +82,18 @@ public class ContentUpdateResponseGeneratorTest {
         assertTrue(stringResponseCollectingClientClient.getBufferedJsonStringResponseEntities().size() == 1);
     }
 
+    /**
+     * Similar to previous test but provoques a nullpointer by transferring a null object as hash for the update
+     * request.
+     */
+    @Test(expected = NullPointerException.class)
+    public void testNullHashedUpdate() {
+
+        // Create some state that will be observed by the remote client
+        BroadcastContentManager bcm = new BroadcastContentManager(new StringBroadcastContent("A"));
+        StringResponseCollectingClient stringResponseCollectingClientClient =
+                new StringResponseCollectingClient(timeout, bcm, null);
+    }
 
     /**
      * Verify that a terminated BCM always leads to a 410 (gone) HTTP Code.

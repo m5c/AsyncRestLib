@@ -66,6 +66,11 @@ public class BroadcastContentManager<C extends BroadcastContent> {
      * BroadcastContentManager.
      */
     public void touch() {
+        if (isTerminated()) {
+            throw new RuntimeException("Content can not be updated any more. The broadcast manager is already " +
+                    "terminated.");
+        }
+
         // unblock all threads blocked by current latch
         stateUpdateLatch.countDown();
 
