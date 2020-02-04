@@ -92,7 +92,7 @@ class AsyncNotifyThread<C extends BroadcastContent> extends Thread {
             deferredResult.setErrorResult(ResponseEntity.noContent());
             // If there is an update (either due to lack of hash or actual hash mismatch of (transformed) update)
         else {
-            // Note that ResponseEntity do not support proper json serialization of custom objects out of the box.
+            // Note that ResponseEntity does not support proper json serialization of custom objects out of the box.
             // Therefore the payload is a JSON string that we crated with GSON.
             ResponseEntity<String> response = new ResponseEntity<>(new Gson().toJson(connectionSpecificContent),
                     HttpStatus.OK);

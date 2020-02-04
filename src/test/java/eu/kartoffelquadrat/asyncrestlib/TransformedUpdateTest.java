@@ -5,10 +5,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ResourceBundle;
-
-import static org.junit.Assert.assertTrue;
-
 public class TransformedUpdateTest {
 
     private String defaultContentString = "27225ea03d26abf31a83b3cae6d78489";

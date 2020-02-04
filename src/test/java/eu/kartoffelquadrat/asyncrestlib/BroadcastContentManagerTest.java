@@ -98,4 +98,14 @@ public class BroadcastContentManagerTest {
         String expectedHash = BroadcastContentHasher.hash(new StringBroadcastContent("abc123"));
         assertTrue(manager.getContentHash().equals(expectedHash));
     }
+
+    /**
+     * Test failed awaiting of events due to interruption
+     */
+    @Test(expected = RuntimeException.class)
+    public void interrupt()
+    {
+        Thread.currentThread().interrupt();
+        manager.awaitUpdate();
+    }
 }

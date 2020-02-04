@@ -1,5 +1,6 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -7,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.lang.reflect.Field;
+import java.time.Duration;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -40,6 +43,30 @@ public class ContentUpdateResponseGeneratorTest {
         DeferredResult<ResponseEntity<String>> deferredResult = ResponseGenerator.getAsyncUpdate(timeout, bcm);
         assertFalse(deferredResult.hasResult());
         assertFalse(deferredResult.isSetOrExpired());
+    }
+
+    @Test
+    public void testDeferredResultCompletionOnBcmModification()
+    {
+        // Pretend a client that instantly subscribes to the next bcm modification.
+        // This line will NOT block, but the content of the returned deferred result is empty until the BCM is modified or a timeout occurs.
+        DeferredResult<ResponseEntity<String>> response = ResponseGenerator.getAsyncUpdate(timeout, bcm);
+
+        // since the above line is NOT blocking the result-body should be null.
+        Assert.assertNull(response.getResult());
+
+        // modify the BCM
+        String updateString = "SomethingNew";
+        bcm.updateBroadcastContent(new StringBroadcastContent(updateString));
+
+        // The next line will lead to a awaitility timeout (and junit fail) after max 500 milli-seconds. Can only be unblocked if the deferred result payload is updated earlier.
+        await().atMost(Duration.ofMillis(500)).until(() ->
+        {
+            return response.getResult() != null;
+        });
+        ResponseEntity<String> responseEntity = (ResponseEntity<String>) response.getResult();
+        assertTrue(responseEntity.getStatusCodeValue() == 200);
+        assertTrue(responseEntity.getBody().contains(updateString));
     }
 
     /**
