@@ -8,21 +8,21 @@ import org.springframework.web.context.request.async.DeferredResult;
 import java.util.concurrent.ForkJoinPool;
 
 /**
- * The ResponseGenerator provides one-time notifications about status changes registered by a provided
- * BroadcastContentManager. The result of the below methods can be directly returned by Spring Rest controllers to
- * provide potentially asynchronous status updates for long-polling rest client.
+ * The ResponseGenerator provides notifications about status changes registered by a provided BroadcastContentManager.
+ * The result of the below methods can be directly used as result object of the calling Spring Rest controllers to
+ * long-polling rest clients. All of the three offered methods place on of the following HTTP response codes in the
+ * returned object: 200 (OK) if an update occurred, 408 (Timeout) if no update occurred before the provided timeout,
+ * 204 (NoContent) if no more updates are to expect.
  *
  * @author Maximilian Schiedermeier
  */
 public class ResponseGenerator {
 
     /**
-     * Method for the most basic usage of the Async Rest Library. If called the result gets deferred until a status
-     * change appears on server side (new BroadcastContent registered) or a timeout occurred, whatever comes first.
-     * Returns the next registered BroadcastContent revision to the client. Waiting for status changes is blocking
-     * process, the reply therefore comes asynchronously. Note that this method gives you no possibility to querry the
-     * content at moment of calling, for no hash comparision is invoked.
-     *
+     * The most basic usage of the Async Rest Library. If called, the result is deferred until a status change appears
+     * on server side (new BroadcastContent registered) or a timeout occurred, whatever comes first. The result only
+     * carries a BroadcastContent (serialized as json string) in the body, if an update was registered. Waiting for
+     * status changes is a blocking process, the reply therefore comes asynchronously.
      * @param longPollTimeout         maximum amount in milliseconds before a result is returned.
      * @param broadcastContentManager reference to the entity that handles broadcast content status updated.
      * @param <C>                     as the specific library-external class that implements the broadcastContent
@@ -139,6 +139,13 @@ public class ResponseGenerator {
      */
     private static <C extends BroadcastContent> DeferredResult<ResponseEntity<String>> getDeferredResult(long longPollTimeout, BroadcastContentManager<C> broadcastContentManager, String clientContentHashString, Transformer<C> transformer, String transformTag) {
 
+        // First of all don't bother with closed endpoints, directly send a 204 (Gone).
+        if(broadcastContentManager.isTerminated()) {
+            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>(longPollTimeout);
+            deferredResult.setErrorResult(ResponseEntity.status((HttpStatus.GONE)));
+            return deferredResult;
+        }
+
         // We configure a timeout + strategy, so we automatically get an HTTP timeout header if no update was
         // registered by the broadcastContentManager within a given time-frame.
         DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>(longPollTimeout);
@@ -192,12 +199,11 @@ public class ResponseGenerator {
         BroadcastContent transformedBroadcastContent = transformer.transform(currentBroadcastContent, transformerTag);
 
         // Immediate updates are not required for empty / whitespace messages.
-        if(transformedBroadcastContent.isEmpty())
+        if (transformedBroadcastContent.isEmpty())
             return false;
 
         // a direct update is required, if the computed hash is distinct to the version provided by the caller.
         return !callerBroadcastContentHash.equals(BroadcastContentHasher.hash(transformedBroadcastContent));
     }
-
 
 }

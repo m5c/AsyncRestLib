@@ -53,15 +53,36 @@ public class BroadcastContentManager<C extends BroadcastContent> {
         if (!contentUpdate.isEmpty() && !getContentHash().equals(BroadcastContentHasher.hash(contentUpdate))) {
             this.customBroadcastContent = contentUpdate;
 
-            // unblock all threads blocked by current latch
-            stateUpdateLatch.countDown();
-
-            // create a new latch for future threads
-            stateUpdateLatch = new CountDownLatch(1);
+            touch();
         }
     }
 
-    // Ignore the "never used" warning, this method is called by the library-user.
+    /**
+     * Manually advises to BroadcastContentManager that the content hash changed. The BroadcastContentManager then
+     * unblocks all subscribers, waiting for an update. Usually calling this method is not required, for
+     * BroadcastContents are supposed to be implemented as immutables. The default way to notify the
+     * BroadcastContentManager about an update is therefore the "updateBroadcastContent" method. Use this one only if
+     * your BroadcastContent is not immutable and you modified the internals of the instance maintained by the
+     * BroadcastContentManager.
+     */
+    public void touch() {
+        if (isTerminated()) {
+            throw new RuntimeException("Content can not be updated any more. The broadcast manager is already " +
+                    "terminated.");
+        }
+
+        // unblock all threads blocked by current latch
+        stateUpdateLatch.countDown();
+
+        // create a new latch for future threads
+        stateUpdateLatch = new CountDownLatch(1);
+    }
+
+    /**
+     * Call this method to prevent further updates. Calling this method unblocks subscribers to updates. The ARL
+     * furthermore sets the HTTP return code to 500, to indicate that no further updates will be provided for this
+     * resource.
+     */
     public void terminate() {
         this.terminated = true;
 
@@ -69,6 +90,11 @@ public class BroadcastContentManager<C extends BroadcastContent> {
         stateUpdateLatch.countDown();
     }
 
+
+    /**
+     * Getter to tell whether this BroadcastContentManager declines further updates.
+     * @return a flag to indicate if this manager is already terminated.
+     */
     public boolean isTerminated() {
         return terminated;
     }
@@ -77,7 +103,7 @@ public class BroadcastContentManager<C extends BroadcastContent> {
      * returns the md5-sum of the serialized version of the currently stored content. This can be used to avoid status
      * updates when the managed content hs not actually changed.
      *
-     * @return the hash of the content
+     * @return the hash of the content.
      */
     public String getContentHash() {
         return BroadcastContentHasher.hash(customBroadcastContent);
