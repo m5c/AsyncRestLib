@@ -2,7 +2,7 @@
 
 # Async Rest Library
 
-The *Async Rest Library* implements [long-poll](https://en.wikipedia.org/wiki/Push_technology#Long_polling) functionality for convenient use in [Spring Rest Controllers](https://spring.io/projects/spring-boot).  
+The *Async Rest Library* provides [long-poll](https://en.wikipedia.org/wiki/Push_technology#Long_polling) handling for convenient integration in [Spring Rest Controllers](https://spring.io/projects/spring-boot).  
 
 ![Coverage](https://img.shields.io/codecov/c/github/dwyl/hapi-auth-jwt2.svg?maxAge=2592000)
 ![Build Status](https://travis-ci.org/google/gson.svg?branch=master)
@@ -10,17 +10,16 @@ The *Async Rest Library* implements [long-poll](https://en.wikipedia.org/wiki/Pu
 
 ## About
 
-Some web-application require asynchronous updates, also known as server-side *push messages*.
+Some web-application require asynchronous update notifications, also known as server-side *push messages*.
 
- * Standard request-reply protocols do not support asynchronous updates, because all communication is client-initiated.
- * In many cases a RESTful (and therefore HTTP/request-reply) backend is still the preferred design option.
+ * Standard request-reply protocols do not support asynchronous updates, because communication is always client-initiated.
+ * RESTful APIs commonly use HTTP, which is a request-reply protocol. HTTP provides extreme technological flexibility for the client side.
 
-This library conveniently extends traditional REST endpoints by asynchronous replies.
-
+This library extends Spring Boot to enable asynchronous update notifications over HTTP Rest Controllers, with minimal code changes.
 
 ## Basic Usage
 
-The ARL is called from a Spring Controller's REST-endpoint method. The received request is then suspended until the next update or connection timeout.  
+The ARL is called from a Spring Controller's REST-endpoint method. The received request is then suspended until the next content change or connection timeout.  
 
 ### Spring Controller Integration
 ```java
