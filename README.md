@@ -130,7 +130,7 @@ Then add the following dependency block:
 <dependency>
     <groupId>com.github.kartoffelquadrat</groupId>
     <artifactId>AsyncRestLib</artifactId>
-    <version>v1.3</version>
+    <version>v1.4</version>
 </dependency>
 ```
 
