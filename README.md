@@ -15,7 +15,7 @@ Some web-application require asynchronous update notifications, also known as se
  * Standard request-reply protocols do not support asynchronous updates, because communication is always client-initiated.
  * RESTful APIs commonly use HTTP, which is a request-reply protocol. HTTP provides extreme technological flexibility for the client side.
 
-This library extends Spring Boot to enable asynchronous update notifications over HTTP Rest Controllers, with minimal code changes.
+This library extends Spring Boot to enable asynchronous update notifications by HTTP Rest Controllers, with minimal code changes.
 
 ## Basic Usage
 
@@ -39,7 +39,11 @@ public DeferredResult<ResponseEntity<String>> asyncGetState() {
 
 ### Broadcast Content Manager
 
-The ASR uses the generic [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) to keep track of state changes and unblock affected update requests.
+The ASR uses the generic [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) to keep track of state changes and unblock affected update requests.  
+There is exactly one [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) per observable ressource. What ever object stands behind the observed resource should implement the ARL provided [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
+Example: In a chat application, a client could observe arising messages. Then on server side there will be one [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) for the corresponding REST endpoint, observing messages registered on service side. The message class then implements the [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
+
+#### Hands-on instructions
 
  * Make your state class (the object your clients requested) implement the ASR's [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
  * The [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) (bcm) always holds exactly one instance of your custom [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
