@@ -4,7 +4,14 @@
 
 The *Async Rest Library* provides [long-poll](https://en.wikipedia.org/wiki/Push_technology#Long_polling) handling for convenient integration in [Spring Rest Controllers](https://spring.io/projects/spring-boot).  
 
+![version](https://img.shields.io/badge/version-1.5-brightgreen)
 ![coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+![building](https://img.shields.io/badge/build-passing-brightgreen)
+![spring](https://img.shields.io/badge/Spring%20Boot-2.1.7-blue)
+![apache](https://img.shields.io/badge/Commons%20Codec-1.9-blue)
+![gson](https://img.shields.io/badge/Gson-2.8.6-blue)
+![awaitility](https://img.shields.io/badge/Awaitility-4.0.2-blue)
+
 
 ## About
 
