@@ -3,10 +3,53 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0     http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- meta -->
     <groupId>eu.kartoffelquadrat</groupId>
     <artifactId>asyncrestlib</artifactId>
     <packaging>jar</packaging>
-    <version>1.4</version>
+    <version>1.5.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>A Spring Boot extension for asynchronous HTTP/REST callbacks</description>
+    <url>https://github.com/kartoffelquadrat/AsyncRestLib</url>
+
+    <!-- legal -->
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <!-- main developer -->
+    <developers>
+        <developer>
+            <name>Maximilian Schiedermeier</name>
+            <email>maximilian.schiedermeier@mcgill.ca</email>
+            <organization>kartoffelquadrat.eu</organization>
+            <organizationUrl>https://github.com/kartoffelquadrat</organizationUrl>
+        </developer>
+    </developers>
+
+    <!-- source control management -->
+    <scm>
+        <connection>scm:git:git://github.com/kartoffelquadrat/AsyncRestLib.git</connection>
+        <developerConnection>scm:git:git@github.com/kartoffelquadrat/AsyncRestLib.git</developerConnection>
+        <url>https://github.com/kartoffelquadrat/AsyncRestLib</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <!-- maven repository deployment -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,16 +85,21 @@
             <artifactId>awaitility</artifactId>
             <version>4.0.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>1.9.5</version>
+        </dependency>
     </dependencies>
 
-
-
-    <!-- add javadoc and sources into built artifact, so the library can be debugged-->
     <build>
         <plugins>
+            <!-- add sources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -61,9 +109,12 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- add docs -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -73,8 +124,47 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Note: The extra plugins for MAVEN central uploads are in the "release" profile-->
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- sign releases with gpg -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- maven central publishing plugin -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
 
