@@ -4,7 +4,7 @@
 
 The *Async Rest Library* provides [long-poll](https://en.wikipedia.org/wiki/Push_technology#Long_polling) handling for convenient integration in [Spring Rest Controllers](https://spring.io/projects/spring-boot).  
 
-![version](https://img.shields.io/badge/version-1.5-brightgreen)
+![version](https://img.shields.io/badge/version-1.5.1-brightgreen)
 ![coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
 ![building](https://img.shields.io/badge/build-passing-brightgreen)
 ![spring](https://img.shields.io/badge/Spring%20Boot-2.1.7-blue)
@@ -126,46 +126,22 @@ ARL-internal hashing:
 
 ### Maven
 
-Add the following repository block to your ```pom.xml```:
-
-```xml
-<repositories>
-	<repository>
-	    <id>jitpack.io</id>
-	    <url>https://jitpack.io</url>
-	</repository>
-</repositories>
-```
-
-Then add the following dependency block:
+Add the following snippet to your ```dependencies``` in your project's ```pom.xml```:
 
 ```xml
 <dependency>
-    <groupId>com.github.kartoffelquadrat</groupId>
-    <artifactId>AsyncRestLib</artifactId>
-    <version>v1.4</version>
+    <groupId>eu.kartoffelquadrat</groupId>
+    <artifactId>asyncrestlib</artifactId>
+    <version>1.5.1</version>
 </dependency>
 ```
 
 ### Gradle
 
-Add the following repository to your ```build.gradle```:
+Add the following dependency to your ```build.gradle```:
 
 ```
-allprojects {
-	repositories {
-		...
-		maven { url 'https://jitpack.io' }
-	}
-}
-```
-
-Then add the following dependency:
-
-```
-dependencies {
-	implementation 'com.github.kartoffelquadrat:AsyncRestLib:v1.3'
-}
+compile group: 'eu.kartoffelquadrat', name: 'asyncrestlib', version: '1.5.1'
 ```
 
 ## Quickstart
