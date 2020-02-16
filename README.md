@@ -20,7 +20,8 @@ Some web-application require asynchronous update notifications, also known as se
  * Standard request-reply protocols do not support asynchronous updates, because communication is always client-initiated.
  * RESTful APIs commonly use HTTP, which is a request-reply protocol. HTTP provides extreme technological flexibility for the client side.
 
-This library extends Spring Boot to enable asynchronous update notifications by HTTP Rest Controllers, with minimal code changes.
+This library extends Spring Boot to enable asynchronous update notifications by HTTP Rest Controllers, with minimal code changes.  
+=> Check out the [demo application / code examples](https://github.com/kartoffelquadrat/AsyncRestDemo).
 
 ## Basic Usage
 
@@ -164,4 +165,4 @@ compile group: 'eu.kartoffelquadrat', name: 'asyncrestlib', version: '1.5.1'
  * Author: Maximilian Schiedermeier ![email](email.png)
  * Github: Kartoffelquadrat
  * Webpage: https://www.cs.mcgill.ca/~mschie3
-
+ * License: [MIT](https://opensource.org/licenses/MIT)
