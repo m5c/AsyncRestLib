@@ -102,7 +102,7 @@ Allows custom [server-side transformations](https://kartoffelquadrat.github.io/A
 
 ### Hashing
 
-Hash-based updates operate on a [MD5-sum of the JSON-string serialization](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentHasher.html).  
+Hash-based updates operate on a [MD5-sum](https://en.wikipedia.org/wiki/MD5) of the [JSON-string serialization](https://en.wikipedia.org/wiki/JSON).  
 ARL-internal hashing:  
 ```DigestUtils.md5Hex(new Gson().toJson(broadcastContent))```:
 
@@ -160,7 +160,7 @@ dependencies {
  1. Add the ARL as a project dependency to your Spring Boot project.
  2. Prepare a vanilla Spring-REST controller enpoint.
  3. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
- 4. Make the your state-object implement the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
+ 4. Make your state-object implement the ASR-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
 -> Implement the ```isEmpty()``` method and **add a default constructor**.
  5. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>``` payload.
  6. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
