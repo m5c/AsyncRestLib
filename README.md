@@ -4,8 +4,13 @@
 
 The *Async Rest Library* provides [long-poll](https://en.wikipedia.org/wiki/Push_technology#Long_polling) handling for convenient integration in [Spring Rest Controllers](https://spring.io/projects/spring-boot).  
 
-![Coverage](https://img.shields.io/codecov/c/github/dwyl/hapi-auth-jwt2.svg?maxAge=2592000)
-![Build Status](https://travis-ci.org/google/gson.svg?branch=master)
+![version](https://img.shields.io/badge/version-1.5.1-brightgreen)
+![coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+![building](https://img.shields.io/badge/build-passing-brightgreen)
+![spring](https://img.shields.io/badge/Spring%20Boot-2.1.7-blue)
+![apache](https://img.shields.io/badge/Commons%20Codec-1.9-blue)
+![gson](https://img.shields.io/badge/Gson-2.8.6-blue)
+![awaitility](https://img.shields.io/badge/Awaitility-4.0.2-blue)
 
 
 ## About
@@ -15,7 +20,8 @@ Some web-application require asynchronous update notifications, also known as se
  * Standard request-reply protocols do not support asynchronous updates, because communication is always client-initiated.
  * RESTful APIs commonly use HTTP, which is a request-reply protocol. HTTP provides extreme technological flexibility for the client side.
 
-This library extends Spring Boot to enable asynchronous update notifications over HTTP Rest Controllers, with minimal code changes.
+This library extends Spring Boot to enable asynchronous update notifications by HTTP Rest Controllers, with minimal code changes.  
+=> Check out the [demo application / code examples](https://github.com/kartoffelquadrat/AsyncRestDemo).
 
 ## Basic Usage
 
@@ -39,12 +45,20 @@ public DeferredResult<ResponseEntity<String>> asyncGetState() {
 
 ### Broadcast Content Manager
 
-The ASR uses the generic [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) to keep track of state changes and unblock affected update requests.
+The ASR uses the generic [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) to keep track of state changes and unblock affected update requests.  
+
+ * There is exactly one [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) per observable ressource.
+ * Whatever object stands behind the observed resource should implement the ARL provided [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
+ * Example: In a chat application, a client could observe arising messages
+    * On server side there will be one [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) for the corresponding REST endpoint
+    * The message class then implements the [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface and is maintained by the [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html)
+#### Hands-on instructions
 
  * Make your state class (the object your clients requested) implement the ASR's [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
  * The [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) (bcm) always holds exactly one instance of your custom [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
  * To modify the server maintained state, provide a new [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) instance to your bcm, with:  
-```bcm.updateBroadcastContent(theNewState)```
+```bcm.updateBroadcastContent(theNewState)```  
+*Alternatively you can also modify the withheld ```BroadcastContent``` and call ```bcm.touch()```.*
  * The bcm then automatically unblocks all affected withheld update requests.
  * To close you endpoint (e.g. server-shutdown), call ```bcm.terminate()```. This advises clients to stop polling.
 
@@ -113,46 +127,22 @@ ARL-internal hashing:
 
 ### Maven
 
-Add the following repository block to your ```pom.xml```:
-
-```xml
-<repositories>
-	<repository>
-	    <id>jitpack.io</id>
-	    <url>https://jitpack.io</url>
-	</repository>
-</repositories>
-```
-
-Then add the following dependency block:
+Add the following snippet to your ```dependencies``` in your project's ```pom.xml```:
 
 ```xml
 <dependency>
-    <groupId>com.github.kartoffelquadrat</groupId>
-    <artifactId>AsyncRestLib</artifactId>
-    <version>v1.4</version>
+    <groupId>eu.kartoffelquadrat</groupId>
+    <artifactId>asyncrestlib</artifactId>
+    <version>1.5.1</version>
 </dependency>
 ```
 
 ### Gradle
 
-Add the following repository to your ```build.gradle```:
+Add the following dependency to your ```build.gradle```:
 
 ```
-allprojects {
-	repositories {
-		...
-		maven { url 'https://jitpack.io' }
-	}
-}
-```
-
-Then add the following dependency:
-
-```
-dependencies {
-	implementation 'com.github.kartoffelquadrat:AsyncRestLib:v1.3'
-}
+compile group: 'eu.kartoffelquadrat', name: 'asyncrestlib', version: '1.5.1'
 ```
 
 ## Quickstart
@@ -175,4 +165,4 @@ dependencies {
  * Author: Maximilian Schiedermeier ![email](email.png)
  * Github: Kartoffelquadrat
  * Webpage: https://www.cs.mcgill.ca/~mschie3
-
+ * License: [MIT](https://opensource.org/licenses/MIT)
