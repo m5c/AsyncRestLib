@@ -148,7 +148,7 @@ compile group: 'eu.kartoffelquadrat', name: 'asyncrestlib', version: '1.5.1'
 ## Quickstart
 
  1. Add the ARL as a project dependency to your Spring Boot project.
- 2. Prepare a vanilla Spring-REST controller enpoint.
+ 2. Prepare a vanilla Spring-REST controller endpoint.
  3. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
  4. Make your state-object implement the ARL-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
 -> Implement the ```isEmpty()``` method and **add a default constructor**.
