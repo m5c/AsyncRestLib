@@ -38,7 +38,7 @@ public class BroadcastContentManager<C extends BroadcastContent> {
     }
 
     /**
-     * Advanced constructor for a BroadcastContentManager. To be used id the observed BroadcastContent can not be
+     * Advanced constructor for a BroadcastContentManager. To be used if the observed BroadcastContent can not be
      * serialized without custom serialization rules (custom ObjectMapper).
      *
      * @param objectMapper as a custom serializer that applies tailed rules during serialization of the
