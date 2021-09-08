@@ -34,24 +34,24 @@ public class BroadcastContentManagerTest {
      * Test awaiting update without manager termination verify the termination flag is not set and the content has
      * changed
      */
-//    @Test
-//    public void testAwaitUpdate() {
-//
-//        // start extra thread to unlock the blocking method
-//        new Thread(() -> {
-//            try {
-//                Thread.sleep(200);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            manager.updateBroadcastContent(new StringBroadcastContent(updateContentString));
-//        }).start();
-//
-//        // block until update, then check content and termination flag
-//        assertFalse(manager.awaitUpdate());
-//        assertFalse(manager.isTerminated());
-//        assertTrue(BroadcastContentHasher.hash(serializer, manager.getCurrentBroadcastContent()).equals(BroadcastContentHasher.hash(serializer, new StringBroadcastContent(updateContentString))));
-//    }
+    @Test
+    public void testAwaitUpdate() {
+
+        // start extra thread to unlock the blocking method
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            manager.updateBroadcastContent(new StringBroadcastContent(updateContentString));
+        }).start();
+
+        // block until update, then check content and termination flag
+        assertFalse(manager.awaitUpdate()); // TODO: figure out why not unblocked by above update statement.
+        assertFalse(manager.isTerminated());
+        assertTrue(BroadcastContentHasher.hash(serializer, manager.getCurrentBroadcastContent()).equals(BroadcastContentHasher.hash(serializer, new StringBroadcastContent(updateContentString))));
+    }
 
 
     /**

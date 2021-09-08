@@ -20,6 +20,14 @@ public class StringBroadcastContent implements BroadcastContent {
         return content.isEmpty();
     }
 
+    /**
+     * getter is required for serialization to work. Alternatively a custom ObjectMapper can be provided.
+     * @return
+     */
+    public String getContent() {
+        return content;
+    }
+
     public boolean contains(String other)
     {
         return(content.contains(other));

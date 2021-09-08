@@ -75,7 +75,11 @@ public class BroadcastContentManager<C extends BroadcastContent> {
             throw new RuntimeException("Content can not be updated any more. The broadcast manager is already " +
                     "terminated.");
         }
-        if (!contentUpdate.isEmpty() && !getContentHash().equals(BroadcastContentHasher.hash(objectMapper.writer(), contentUpdate))) {
+
+        boolean cisEmpty = contentUpdate.isEmpty();
+        String originalHash = getContentHash();
+        String updateHash = getHashOfCustomContentUsingAssociatedSerializer(contentUpdate);
+        if (!cisEmpty && !originalHash.equals(updateHash)) {
             this.currentBroadcastContent = contentUpdate;
 
             touch();

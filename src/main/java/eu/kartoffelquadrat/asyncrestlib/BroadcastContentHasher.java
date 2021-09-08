@@ -21,7 +21,8 @@ class BroadcastContentHasher {
      */
     protected static String hash(ObjectWriter objectWriter, BroadcastContent content) {
         try {
-            return DigestUtils.md5Hex(objectWriter.writeValueAsString(content));
+            String jsonString = objectWriter.writeValueAsString(content);
+            return DigestUtils.md5Hex(jsonString);
         } catch (JsonProcessingException jex) {
             throw new RuntimeException("Unable to serialize provided BroadcastContent: " + content);
         }
