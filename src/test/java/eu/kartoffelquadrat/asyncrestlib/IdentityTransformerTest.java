@@ -1,5 +1,7 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Test;
 
 /**
@@ -22,8 +24,9 @@ public class IdentityTransformerTest {
 
     @Test
     public void testIdentityTransformerOutput() {
-        assert BroadcastContentHasher.hash(identityTransformer.transform(content, null)).equals(BroadcastContentHasher.hash(new StringBroadcastContent(contentPayload)));
-        assert BroadcastContentHasher.hash(identityTransformer.transform(content, contentPayload)).equals(BroadcastContentHasher.hash(new StringBroadcastContent(contentPayload)));
+        ObjectWriter defaultSerializer = new ObjectMapper().writer();
+        assert BroadcastContentHasher.hash(defaultSerializer, identityTransformer.transform(content, null)).equals(BroadcastContentHasher.hash(defaultSerializer, new StringBroadcastContent(contentPayload)));
+        assert BroadcastContentHasher.hash(defaultSerializer, identityTransformer.transform(content, contentPayload)).equals(BroadcastContentHasher.hash(defaultSerializer, new StringBroadcastContent(contentPayload)));
 
     }
 }

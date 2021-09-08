@@ -1,5 +1,9 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -11,15 +15,40 @@ import java.util.concurrent.CountDownLatch;
  */
 public class BroadcastContentManager<C extends BroadcastContent> {
 
+    // the modelMapper used for serialization (is the default jacklson object mapper if no custom mapper was provider by
+    // constructor)
+    private final ObjectMapper objectMapper;
+    // stores a universal latch that is unblocked and replaced every time the server status changes.
+    CountDownLatch stateUpdateLatch = new CountDownLatch(1);
     // the current content. Can be updated.
-    private C customBroadcastContent;
-
+    private C currentBroadcastContent;
     // a broadcast manager can be actively terminated. If this happens, all the latch is unblocked and a terminated flag
     // is set. This way open connections can be gracefully closed.
     private boolean terminated = false;
 
-    // stores a universal latch that is unblocked and replaced every time the server status changes.
-    CountDownLatch stateUpdateLatch = new CountDownLatch(1);
+    /**
+     * Standard constructor for a BroadcastContentManager. To be used if no custom serialization rules are required for
+     * the BroadcastContent.
+     *
+     * @param content as the resource content observed by subscribers.
+     */
+    public BroadcastContentManager(C content) {
+        this.currentBroadcastContent = content;
+        objectMapper = new ObjectMapper();
+    }
+
+    /**
+     * Advanced constructor for a BroadcastContentManager. To be used id the observed BroadcastContent can not be
+     * serialized without custom serialization rules (custom ObjectMapper).
+     *
+     * @param objectMapper as a custom serializer that applies tailed rules during serialization of the
+     *                     BroadcastContent.
+     * @param content      as the resource content observed by subscribers.
+     */
+    public BroadcastContentManager(ObjectMapper objectMapper, C content) {
+        this.objectMapper = objectMapper;
+        this.currentBroadcastContent = content;
+    }
 
     /**
      * Blocks the calling thread until there is something new to propagate (update of referenced broadcast content)
@@ -36,10 +65,6 @@ public class BroadcastContentManager<C extends BroadcastContent> {
         }
     }
 
-    public BroadcastContentManager(C content) {
-        this.customBroadcastContent = content;
-    }
-
     /**
      * Updates the maintained content and unblocks the latch. Empty content or content identical by hash is rejected.
      *
@@ -50,8 +75,8 @@ public class BroadcastContentManager<C extends BroadcastContent> {
             throw new RuntimeException("Content can not be updated any more. The broadcast manager is already " +
                     "terminated.");
         }
-        if (!contentUpdate.isEmpty() && !getContentHash().equals(BroadcastContentHasher.hash(contentUpdate))) {
-            this.customBroadcastContent = contentUpdate;
+        if (!contentUpdate.isEmpty() && !getContentHash().equals(BroadcastContentHasher.hash(objectMapper.writer(), contentUpdate))) {
+            this.currentBroadcastContent = contentUpdate;
 
             touch();
         }
@@ -93,6 +118,7 @@ public class BroadcastContentManager<C extends BroadcastContent> {
 
     /**
      * Getter to tell whether this BroadcastContentManager declines further updates.
+     *
      * @return a flag to indicate if this manager is already terminated.
      */
     public boolean isTerminated() {
@@ -100,16 +126,57 @@ public class BroadcastContentManager<C extends BroadcastContent> {
     }
 
     /**
-     * returns the md5-sum of the serialized version of the currently stored content. This can be used to avoid status
+     * Returns the md5-sum of the serialized version of the currently stored content. This can be used to avoid status
      * updates when the managed content hs not actually changed.
      *
      * @return the hash of the content.
      */
     public String getContentHash() {
-        return BroadcastContentHasher.hash(customBroadcastContent);
+        return BroadcastContentHasher.hash(objectMapper.writer(), currentBroadcastContent);
     }
 
+    /**
+     * Getter to look up the current state of the maintained broadcast content.
+     *
+     * @return current broadcast content.
+     */
     public C getCurrentBroadcastContent() {
-        return customBroadcastContent;
+        return currentBroadcastContent;
+    }
+
+
+    /**
+     * Returns the immutable writer belonging to this BroadcastContentManager. Can be used to convert e.g. transformed
+     * broadcastContents.
+     *
+     * @return object writer which is capable of serializing objects the same way this BCM would have processed them.
+     */
+    // TODO: Verify if needed.
+    public ObjectWriter getImmutableSerializer() {
+        return objectMapper.writer();
+    }
+
+    /**
+     * Returns the json serialization computed for a provided BroadcastContent, using the serializer associated to this
+     * BCM.
+     *
+     * @return String json string serialization of the received object, produced with serializer associated to this BCM.
+     */
+    public String serializeCustomContentUsingAssociatedSerializer(BroadcastContent customContent) {
+        try {
+            return objectMapper.writeValueAsString(customContent);
+        } catch (JsonProcessingException jex) {
+            throw new RuntimeException("Unable to serialize provided custom BroadcastContent: " + customContent);
+        }
+    }
+
+    /**
+     * Returns the hash computed for a provided BroadcastContent, using the serializer associated to this BCM.
+     *
+     * @return String md5 hash of the received object, serialized with serializer associated to this BCM.
+     */
+    public String getHashOfCustomContentUsingAssociatedSerializer(BroadcastContent customContent) {
+
+        return BroadcastContentHasher.hash(objectMapper.writer(), customContent);
     }
 }

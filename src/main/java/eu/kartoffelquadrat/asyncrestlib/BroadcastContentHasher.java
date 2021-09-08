@@ -1,6 +1,7 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.codec.digest.DigestUtils;
 
 /**
@@ -11,7 +12,18 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 class BroadcastContentHasher {
 
-    public static String hash(BroadcastContent content) {
-        return DigestUtils.md5Hex(new Gson().toJson(content));
+    /**
+     * Computes the MD5 sum of the JSON serialization string for a provided BroadcastContent object.
+     *
+     * @param objectWriter as the serializer to be used to convert the content into a JSON string.
+     * @param content as the object to be serialized and hashed.
+     * @return
+     */
+    protected static String hash(ObjectWriter objectWriter, BroadcastContent content) {
+        try {
+            return DigestUtils.md5Hex(objectWriter.writeValueAsString(content));
+        } catch (JsonProcessingException jex) {
+            throw new RuntimeException("Unable to serialize provided BroadcastContent: " + content);
+        }
     }
 }

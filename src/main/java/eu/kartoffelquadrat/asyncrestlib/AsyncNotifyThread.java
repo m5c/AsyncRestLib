@@ -1,6 +1,5 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
-import com.google.gson.Gson;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -80,7 +79,7 @@ class AsyncNotifyThread<C extends BroadcastContent> extends Thread {
                     transformTag);
             boolean contentEmpty = connectionSpecificContent == null || connectionSpecificContent.isEmpty();
             boolean relevantUpdate =
-                    (!noHashProvided && !contentEmpty && !clientContentHashString.equals(BroadcastContentHasher.hash(connectionSpecificContent)));
+                    (!noHashProvided && !contentEmpty && !clientContentHashString.equals(broadcastContentManager.getHashOfCustomContentUsingAssociatedSerializer(connectionSpecificContent)));
 
             // check if any of (1) / (2) / (3) are fulfilled (loop end-criteria)
             stopWaiting = closed || noHashProvided || relevantUpdate;
@@ -94,7 +93,7 @@ class AsyncNotifyThread<C extends BroadcastContent> extends Thread {
         else {
             // Note that ResponseEntity does not support proper json serialization of custom objects out of the box.
             // Therefore the payload is a JSON string that we crated with GSON.
-            ResponseEntity<String> response = new ResponseEntity<>(new Gson().toJson(connectionSpecificContent),
+            ResponseEntity<String> response = new ResponseEntity<>(broadcastContentManager.serializeCustomContentUsingAssociatedSerializer(connectionSpecificContent),
                     HttpStatus.OK);
             deferredResult.setResult(response);
         }

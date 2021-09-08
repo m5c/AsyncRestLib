@@ -1,6 +1,7 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,12 +24,12 @@ public class Terminator {
     int timeout;
 
     @Before
-    public void prepareTest() {
+    public void prepareTest() throws JsonProcessingException {
         defaultContentString = "27225ea03d26abf31a83b3cae6d78489";
 
         // Note that the hash is ALWAYS computed based on the JSON_String representation of the BroadcastContent,
         // and not just the payload.
-        initialHash = DigestUtils.md5Hex(new Gson().toJson(new StringBroadcastContent(defaultContentString)));
+        initialHash = DigestUtils.md5Hex(new ObjectMapper().writeValueAsString(new StringBroadcastContent(defaultContentString)));
 
         // Set timeout high enough so a terminator thread can kill the BCM while the client is waiting for updates.
         timeout = 5000;

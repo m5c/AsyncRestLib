@@ -1,11 +1,8 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
-import com.google.gson.Gson;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
-
-import java.util.concurrent.ForkJoinPool;
 
 /**
  * The ResponseGenerator provides notifications about status changes registered by a provided BroadcastContentManager.
@@ -154,15 +151,12 @@ public class ResponseGenerator {
         // If a hash is provided we run a preliminary check (the current broadcast content might already be new to the
         // caller. In that case we forget about async updates and directly return the current broadcast content as
         // synchronous reply.
-        if (isSynchronousUpdateRequired(clientContentHashString, broadcastContentManager.getCurrentBroadcastContent()
+        if (isSynchronousUpdateRequired(clientContentHashString, broadcastContentManager
                 , transformer, transformTag)) {
             // The currently stored version is an update to caller. We therefore send a direct update
             C transformedBroadcastContent =
                     transformer.transform(broadcastContentManager.getCurrentBroadcastContent(), transformTag);
-
-            // Note that ResponseEntity do not support proper json serialization of custom objects out of the box.
-            // Therefore the payload is a JSON string that we crated with GSON.
-            deferredResult.setResult(ResponseEntity.ok(new Gson().toJson(transformedBroadcastContent)));
+            deferredResult.setResult(ResponseEntity.ok(broadcastContentManager.serializeCustomContentUsingAssociatedSerializer(transformedBroadcastContent)));
             return deferredResult;
         }
 
@@ -188,7 +182,7 @@ public class ResponseGenerator {
      * determine if a direct synchronous update is applicable.
      */
     private static boolean isSynchronousUpdateRequired(String callerBroadcastContentHash,
-                                                       BroadcastContent currentBroadcastContent,
+                                                       BroadcastContentManager broadcastContentManager,
                                                        Transformer transformer, String transformerTag) {
         // Direct updates are only possible if a hash mismatch can be detected. No hash provided, means no direct
         // updates possible.
@@ -196,14 +190,14 @@ public class ResponseGenerator {
             return false;
 
         // compute hash of the transformed version of what is currently stored.
-        BroadcastContent transformedBroadcastContent = transformer.transform(currentBroadcastContent, transformerTag);
+        BroadcastContent transformedBroadcastContent = transformer.transform(broadcastContentManager.getCurrentBroadcastContent(), transformerTag);
 
         // Immediate updates are not required for empty / whitespace messages.
         if (transformedBroadcastContent.isEmpty())
             return false;
 
         // a direct update is required, if the computed hash is distinct to the version provided by the caller.
-        return !callerBroadcastContentHash.equals(BroadcastContentHasher.hash(transformedBroadcastContent));
+        return !callerBroadcastContentHash.equals(broadcastContentManager.getHashOfCustomContentUsingAssociatedSerializer(transformedBroadcastContent));
     }
 
 }
