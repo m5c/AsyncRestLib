@@ -25,7 +25,7 @@ This library extends Spring Boot to enable asynchronous update notifications by 
 
 ## Basic Usage
 
-The ARL is called from a Spring Controller's REST-endpoint method. The received request is then suspended until the next content change or connection timeout.  
+The ARL is called from a Spring Controller REST-endpoint method. The library suspends the (otherwise immediate) anwer until a content change of the associated resource or connection timeout occurs.  
 
 ### Spring Controller Integration
 ```java
@@ -52,6 +52,9 @@ The ARL uses the generic [```BroadcastContentManager```](https://kartoffelquadra
  * Example: In a chat application, a client could observe arising messages
     * On server side there will be one [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) for the corresponding REST endpoint
     * The message class then implements the [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface and is maintained by the [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html)
+
+ > Note: In case the observed content can not be serialized by the default Jackson ObjectMapper, use the [advanced BroadcastContentManager constructor](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html), to provide a custom serializer.
+
 #### Hands-on instructions
 
  * Make your state class (the object your clients requested) implement the ARL's [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
