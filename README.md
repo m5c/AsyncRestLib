@@ -4,7 +4,7 @@
 
 The *Async Rest Library* provides [long-poll](https://en.wikipedia.org/wiki/Push_technology#Long_polling) handling for convenient integration in [Spring Rest Controllers](https://spring.io/projects/spring-boot).  
 
-![version](https://img.shields.io/badge/version-1.5.1-brightgreen)
+![version](https://img.shields.io/badge/version-1.6.2-brightgreen)
 ![coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
 ![building](https://img.shields.io/badge/build-passing-brightgreen)
 ![spring](https://img.shields.io/badge/Spring%20Boot-2.1.7-blue)
@@ -136,7 +136,7 @@ Add the following snippet to your ```dependencies``` in your project's ```pom.xm
 <dependency>
     <groupId>eu.kartoffelquadrat</groupId>
     <artifactId>asyncrestlib</artifactId>
-    <version>1.5.1</version>
+    <version>1.6.2</version>
 </dependency>
 ```
 
@@ -145,7 +145,7 @@ Add the following snippet to your ```dependencies``` in your project's ```pom.xm
 Add the following dependency to your ```build.gradle```:
 
 ```
-compile group: 'eu.kartoffelquadrat', name: 'asyncrestlib', version: '1.5.1'
+compile group: 'eu.kartoffelquadrat', name: 'asyncrestlib', version: '1.6.2'
 ```
 
 ## Quickstart
