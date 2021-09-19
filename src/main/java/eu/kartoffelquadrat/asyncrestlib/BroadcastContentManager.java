@@ -15,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class BroadcastContentManager<C extends BroadcastContent> {
 
-    // the modelMapper used for serialization (is the default jacklson object mapper if no custom mapper was provider by
+    // the modelMapper used for serialization (is the default jackson object mapper if no custom mapper was provider by
     // constructor)
     private final ObjectMapper objectMapper;
     // stores a universal latch that is unblocked and replaced every time the server status changes.

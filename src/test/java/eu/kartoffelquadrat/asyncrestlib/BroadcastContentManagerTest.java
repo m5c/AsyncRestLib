@@ -1,5 +1,6 @@
 package eu.kartoffelquadrat.asyncrestlib;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,15 @@ public class BroadcastContentManagerTest {
         serializer = manager.getImmutableSerializer();
     }
 
+    @Test
+    /**
+     * Test to created BCM with custom serializer (objectMapper).
+     */
+    public void testCreateBroadcastContentManagerWithCustomSerializer()
+    {
+        StringBroadcastContent stringContent = new StringBroadcastContent("everythingIsAwesome");
+        BroadcastContentManager<StringBroadcastContent> stringBcm = new BroadcastContentManager(new ObjectMapper(), stringContent);
+    }
 
     /**
      * Test awaiting update without manager termination verify the termination flag is not set and the content has
