@@ -21,7 +21,7 @@ Some web-application require asynchronous update notifications, also known as se
  * RESTful APIs commonly use HTTP, which is a request-reply protocol. HTTP provides extreme technological flexibility for the client side.
 
 This library extends Spring Boot to enable asynchronous update notifications by HTTP Rest Controllers, with minimal code changes.  
-=> Check out the [demo application / code examples](https://github.com/kartoffelquadrat/AsyncRestDemo).
+=> Check out the [demo application / code examples](https://github.com/m5c/AsyncRestDemo).
 
 ## Basic Usage
 
@@ -45,21 +45,21 @@ public DeferredResult<ResponseEntity<String>> asyncGetState() {
 
 ### Broadcast Content Manager
 
-The ARL uses the generic [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) to keep track of state changes and unblock affected update requests.  
+The ARL uses the generic [```BroadcastContentManager```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) to keep track of state changes and unblock affected update requests.  
 
- * There is exactly one [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) per observable ressource.
- * Whatever object stands behind the observed resource should implement the ARL provided [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
+ * There is exactly one [```BroadcastContentManager```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) per observable ressource.
+ * Whatever object stands behind the observed resource should implement the ARL provided [```BroadcastContent```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
  * Example: In a chat application, a client could observe arising messages
-    * On server side there will be one [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) for the corresponding REST endpoint
-    * The message class then implements the [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface and is maintained by the [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html)
+    * On server side there will be one [```BroadcastContentManager```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) for the corresponding REST endpoint
+    * The message class then implements the [```BroadcastContent```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface and is maintained by the [```BroadcastContentManager```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html)
 
- > Note: In case the observed content can not be serialized by the default Jackson ObjectMapper, use the [advanced BroadcastContentManager constructor](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html), to provide a custom serializer.
+ > Note: In case the observed content can not be serialized by the default Jackson ObjectMapper, use the [advanced BroadcastContentManager constructor](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html), to provide a custom serializer.
 
 #### Hands-on instructions
 
- * Make your state class (the object your clients requested) implement the ARL's [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
- * The [```BroadcastContentManager```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) (bcm) always holds exactly one instance of your custom [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
- * To modify the server maintained state, provide a new [```BroadcastContent```](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) instance to your bcm, with:  
+ * Make your state class (the object your clients requested) implement the ARL's [```BroadcastContent```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.
+ * The [```BroadcastContentManager```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html) (bcm) always holds exactly one instance of your custom [```BroadcastContent```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation.
+ * To modify the server maintained state, provide a new [```BroadcastContent```](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) instance to your bcm, with:  
 ```bcm.updateBroadcastContent(theNewState)```  
 *Alternatively you can also modify the withheld ```BroadcastContent``` and call ```bcm.touch()```.*
  * The bcm then automatically unblocks all affected withheld update requests.
@@ -113,7 +113,7 @@ Update requests contain a hash of the current client state. Requests with a non-
    * Can be used to retrieve an initial client state synchronously, instead of having to wait for the first update.
 
  * ```ResponseGenerator.getTransformedUpdate(longPollTimeout, broadcastContentManager, hash, transf, tag)```  
-Allows custom [server-side transformations](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/Transformer.html) of state-changes, prior to propagation. 
+Allows custom [server-side transformations](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/Transformer.html) of state-changes, prior to propagation. 
    * Replies are withheld until a transformed update differs in hash and is non-empty.
    * Allows the injection of custom pub/sub filters on server side and reduce traffic.
 
@@ -153,9 +153,9 @@ compile group: 'eu.kartoffelquadrat', name: 'asyncrestlib', version: '1.6.2'
  1. Add the ARL as a project dependency to your Spring Boot project.
  2. Prepare a vanilla Spring-REST controller endpoint.
  3. Change the enpoint method's return type to: ```DeferredResult<ResponseEntity<String>>```
- 4. Make your state-object implement the ARL-provided [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
+ 4. Make your state-object implement the ARL-provided [BroadcastContent](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) interface.  
 -> Implement the ```isEmpty()``` method and **add a default constructor**.
- 5. Initialize your Spring REST controller with a [BroadcastContentManager](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://kartoffelquadrat.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>``` payload.
+ 5. Initialize your Spring REST controller with a [BroadcastContentManager](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContentManager.html), use your [BroadcastContent](https://m5c.github.io/AsyncRestLib/eu/kartoffelquadrat/asyncrestlib/BroadcastContent.html) implementation as ```<Generic>``` payload.
  6. *Optional*: Define your own transformer and likewise initialize it in your Spring REST controller:  
 ```private Transformer<ChatMessage> transformer = new YourCustomTransformer<>();```
  7. From within your controller, call an ARL method and return the result:
